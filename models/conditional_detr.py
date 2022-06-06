@@ -103,7 +103,7 @@ class ConditionalDETR(nn.Module):
         for lvl in range(hs.shape[0]):
             # final_query = hs[lvl].permute(0,2,1)
             # final_query = self.final_proj(final_query).permute(0,2,1)
-            queries_before_ca = hs[lvl].tranpose(0,1)
+            queries_before_ca = hs[lvl].transpose(0,1)
             q = self.ca_q_proj(learnable_queries_bs)
             k = self.ca_k_proj(queries_before_ca)
             v = self.ca_v_proj(queries_before_ca)
