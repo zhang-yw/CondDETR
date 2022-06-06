@@ -26,6 +26,8 @@ from .segmentation import (DETRsegm, PostProcessPanoptic, PostProcessSegm,
                            dice_loss, sigmoid_focal_loss)
 from .transformer import build_transformer
 
+from .attention import MultiheadAttention
+
 
 class ConditionalDETR(nn.Module):
     """ This is the Conditional DETR module that performs object detection """
@@ -50,8 +52,16 @@ class ConditionalDETR(nn.Module):
         self.input_proj = nn.Conv2d(backbone.num_channels, hidden_dim, kernel_size=1)
         self.backbone = backbone
         self.aux_loss = aux_loss
-        self.final_proj = MLP(num_queries, num_final_queries, num_final_queries, 2)
+        self.learnable_queries = nn.Embedding(num_final_queries, hidden_dim)
         self.learnable_reference_points = nn.Embedding(num_final_queries, 2)
+        nhead = transformer.nhead
+        dropout = transformer.dropout
+        self.ca_q_proj = nn.Linear(hidden_dim, hidden_dim)
+        self.ca_k_proj = nn.Linear(hidden_dim, hidden_dim)
+        self.ca_v_proj = nn.Linear(hidden_dim, hidden_dim)
+        self.cross_attn = MultiheadAttention(hidden_dim, nhead, dropout=dropout, vdim=hidden_dim)
+        self.dropout1 = nn.Dropout(dropout)
+        self.norm1 = nn.LayerNorm(hidden_dim)
         # init prior_prob setting for focal loss
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -89,10 +99,18 @@ class ConditionalDETR(nn.Module):
         outputs_coords = []
         final_queries = []
         learnbale_reference_before_sigmoid = self.learnable_reference_points.weight.repeat(bs,1,1)
+        learnable_queries_bs = self.learnable_queries.weight.unsqueeze(1).repeat(1, bs, 1)
         for lvl in range(hs.shape[0]):
-            final_query = hs[lvl].permute(0,2,1)
-            final_query = self.final_proj(final_query).permute(0,2,1)
-            final_queries.append(final_query)
+            # final_query = hs[lvl].permute(0,2,1)
+            # final_query = self.final_proj(final_query).permute(0,2,1)
+            queries_before_ca = hs[lvl].tranpose(0,1)
+            q = self.ca_q_proj(learnable_queries_bs)
+            k = self.ca_k_proj(queries_before_ca)
+            v = self.ca_v_proj(queries_before_ca)
+            tgt = self.self_attn(q, k, value=v)[0]
+            learnable_queries_bs = learnable_queries_bs + self.dropout1(tgt)
+            learnable_queries_bs = self.norm1(learnable_queries_bs)
+            final_queries.append(learnable_queries_bs)
             tmp = self.bbox_embed(final_query)
             tmp[..., :2] += learnbale_reference_before_sigmoid
             outputs_coord = tmp.sigmoid()
