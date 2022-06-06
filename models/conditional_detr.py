@@ -111,7 +111,7 @@ class ConditionalDETR(nn.Module):
             learnable_queries_bs = learnable_queries_bs + self.dropout1(tgt)
             learnable_queries_bs = self.norm1(learnable_queries_bs)
             final_queries.append(learnable_queries_bs)
-            tmp = self.bbox_embed(final_query)
+            tmp = self.bbox_embed(learnable_queries_bs)
             tmp[..., :2] += learnbale_reference_before_sigmoid
             outputs_coord = tmp.sigmoid()
             outputs_coords.append(outputs_coord)
