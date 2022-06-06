@@ -70,6 +70,7 @@ class Transformer(nn.Module):
         self.d_model = d_model
         self.nhead = nhead
         self.dec_layers = num_decoder_layers
+        self.dropout = dropout
 
     def _reset_parameters(self):
         for p in self.parameters():
