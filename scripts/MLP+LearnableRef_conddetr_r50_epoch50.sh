@@ -5,5 +5,5 @@ python -m torch.distributed.launch \
     --nproc_per_node=4 \
     --use_env \
     main.py --batch_size 4 --num_queries 20\
-    --coco_path ../data/coco \
+    --coco_path ../coco \
     --output_dir output/$script_name
