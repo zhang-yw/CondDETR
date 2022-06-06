@@ -88,7 +88,7 @@ class ConditionalDETR(nn.Module):
         reference_before_sigmoid = inverse_sigmoid(reference)
         outputs_coords = []
         final_queries = []
-        learnbale_reference_before_sigmoid = self.learnable_reference_points.repeat(bs,1,1)
+        learnbale_reference_before_sigmoid = self.learnable_reference_points.weight.repeat(bs,1,1)
         for lvl in range(hs.shape[0]):
             final_query = hs[lvl].permute(0,2,1)
             final_query = self.final_proj(final_query).permute(0,2,1)
