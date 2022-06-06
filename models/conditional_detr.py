@@ -29,7 +29,7 @@ from .transformer import build_transformer
 
 class ConditionalDETR(nn.Module):
     """ This is the Conditional DETR module that performs object detection """
-    def __init__(self, backbone, transformer, num_classes, num_queries, aux_loss=False):
+    def __init__(self, backbone, transformer, num_classes, num_queries, num_final_queries, aux_loss=False):
         """ Initializes the model.
         Parameters:
             backbone: torch module of the backbone to be used. See backbone.py
@@ -41,6 +41,7 @@ class ConditionalDETR(nn.Module):
         """
         super().__init__()
         self.num_queries = num_queries
+        self.num_final_queries= num_final_queries
         self.transformer = transformer
         hidden_dim = transformer.d_model
         self.class_embed = nn.Linear(hidden_dim, num_classes)
@@ -49,7 +50,8 @@ class ConditionalDETR(nn.Module):
         self.input_proj = nn.Conv2d(backbone.num_channels, hidden_dim, kernel_size=1)
         self.backbone = backbone
         self.aux_loss = aux_loss
-
+        self.final_proj = nn.MLP(num_queries, num_final_queries, num_final_queries, 2)
+        self.learnable_reference_points = nn.Embedding(num_final_queries, 2)
         # init prior_prob setting for focal loss
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -81,17 +83,24 @@ class ConditionalDETR(nn.Module):
         src, mask = features[-1].decompose()
         assert mask is not None
         hs, reference = self.transformer(self.input_proj(src), mask, self.query_embed.weight, pos[-1])
-        
+        layers, bs, q, d = hs.shape
+
         reference_before_sigmoid = inverse_sigmoid(reference)
         outputs_coords = []
+        final_queries = []
+        learnbale_reference_before_sigmoid = self.learnable_reference_points.repeat(bs,1,1)
         for lvl in range(hs.shape[0]):
-            tmp = self.bbox_embed(hs[lvl])
-            tmp[..., :2] += reference_before_sigmoid
+            final_query = hs[lvl].permute(0,2,1)
+            final_query = self.final_proj(final_query).permute(0,2,1)
+            final_queries.append(final_query)
+            tmp = self.bbox_embed(final_query)
+            tmp[..., :2] += learnbale_reference_before_sigmoid
             outputs_coord = tmp.sigmoid()
             outputs_coords.append(outputs_coord)
         outputs_coord = torch.stack(outputs_coords)
+        final_query = torch.stack(final_queries)
 
-        outputs_class = self.class_embed(hs)
+        outputs_class = self.class_embed(final_query)
         out = {'pred_logits': outputs_class[-1], 'pred_boxes': outputs_coord[-1]}
         if self.aux_loss:
             out['aux_outputs'] = self._set_aux_loss(outputs_class, outputs_coord)
@@ -358,6 +367,7 @@ def build(args):
         transformer,
         num_classes=num_classes,
         num_queries=args.num_queries,
+        num_final_queries=args.num_final_queries,
         aux_loss=args.aux_loss,
     )
     if args.masks:

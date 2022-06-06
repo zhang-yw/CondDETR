@@ -60,8 +60,10 @@ def get_args_parser():
                         help="Dropout applied in the transformer")
     parser.add_argument('--nheads', default=8, type=int,
                         help="Number of attention heads inside the transformer's attentions")
-    parser.add_argument('--num_queries', default=300, type=int,
-                        help="Number of query slots")
+    parser.add_argument('--num_queries', default=20, type=int,
+                        help="Number of query slots in decoder layers")
+    parser.add_argument('--num_final_queries', default=300, type=int,
+                        help="Number of final query slots")
     parser.add_argument('--pre_norm', action='store_true')
 
     # * Segmentation
