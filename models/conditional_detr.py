@@ -50,7 +50,7 @@ class ConditionalDETR(nn.Module):
         self.input_proj = nn.Conv2d(backbone.num_channels, hidden_dim, kernel_size=1)
         self.backbone = backbone
         self.aux_loss = aux_loss
-        self.final_proj = nn.MLP(num_queries, num_final_queries, num_final_queries, 2)
+        self.final_proj = MLP(num_queries, num_final_queries, num_final_queries, 2)
         self.learnable_reference_points = nn.Embedding(num_final_queries, 2)
         # init prior_prob setting for focal loss
         prior_prob = 0.01
