@@ -324,8 +324,6 @@ def multi_head_attention_forward(query: Tensor,
 
     q = q.contiguous().view(tgt_len, bsz * num_heads, head_dim).transpose(0, 1)
     if k is not None:
-        print(bsz)
-        print(num_heads)
         k = k.contiguous().view(-1, bsz * num_heads, head_dim).transpose(0, 1)
     if v is not None:
         v = v.contiguous().view(-1, bsz * num_heads, v_head_dim).transpose(0, 1)

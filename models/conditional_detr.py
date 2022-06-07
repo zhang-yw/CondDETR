@@ -64,8 +64,11 @@ class ConditionalDETR(nn.Module):
         self.norm1 = nn.LayerNorm(hidden_dim)
         self.linear1 = nn.Linear(hidden_dim, 2048)
         self.dropout2 = nn.Dropout(dropout)
+        self.dropout3 = nn.Dropout(dropout)
         self.linear2 = nn.Linear(2048, hidden_dim)
         self.norm2 = nn.LayerNorm(hidden_dim)
+        self.norm3 = nn.LayerNorm(hidden_dim)
+        self.activation = F.relu
         # init prior_prob setting for focal loss
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -110,15 +113,16 @@ class ConditionalDETR(nn.Module):
             # final_query = self.final_proj(final_query).permute(0,2,1)
             queries_before_ca = hs[lvl].transpose(0,1)
             # print(queries_before_ca.shape)
-            q = self.ca_q_proj(learnable_queries_bs)
+            q = self.ca_q_proj(learnable_queries_bs.transpose(0,1))
             k = self.ca_k_proj(queries_before_ca)
             v = self.ca_v_proj(queries_before_ca)
-            print(q.shape)
             tgt = self.cross_attn(query=q, key=k, value=v)[0]
             learnable_queries_bs = learnable_queries_bs + self.dropout1(tgt)
-            learnable_queries_bs = self.norm1(learnable_queries_bs).transpose(0,1)
-
-
+            learnable_queries_bs = self.norm1(learnable_queries_bs)
+            tgt2 = self.linear2(self.dropout2(self.activation(self.linear1(learnable_queries_bs))))
+            learnable_queries_bs = learnable_queries_bs + self.dropout3(tgt2)
+            learnable_queries_bs = self.norm3(learnable_queries_bs).transpose(0,1)
+            
             final_queries.append(learnable_queries_bs)
             tmp = self.bbox_embed(learnable_queries_bs)
             tmp[..., :2] += learnbale_reference_before_sigmoid
