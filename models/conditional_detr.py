@@ -113,7 +113,7 @@ class ConditionalDETR(nn.Module):
             q = self.ca_q_proj(learnable_queries_bs)
             k = self.ca_k_proj(queries_before_ca)
             v = self.ca_v_proj(queries_before_ca)
-            print(k.shape)
+            print(q.shape)
             tgt = self.cross_attn(query=q, key=k, value=v)[0]
             learnable_queries_bs = learnable_queries_bs + self.dropout1(tgt)
             learnable_queries_bs = self.norm1(learnable_queries_bs).transpose(0,1)
