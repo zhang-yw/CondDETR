@@ -67,7 +67,6 @@ class ConditionalDETR(nn.Module):
         self.dropout3 = nn.Dropout(dropout)
         self.linear2 = nn.Linear(2048, hidden_dim)
         self.norm2 = nn.LayerNorm(hidden_dim)
-        self.norm3 = nn.LayerNorm(hidden_dim)
         self.activation = F.relu
         # init prior_prob setting for focal loss
         prior_prob = 0.01
@@ -106,7 +105,7 @@ class ConditionalDETR(nn.Module):
         outputs_coords = []
         final_queries = []
         learnbale_reference_before_sigmoid = self.learnable_reference_points.weight.repeat(bs,1,1)
-        learnable_queries_bs = self.learnable_queries.weight.unsqueeze(0).repeat(bs,1,1)
+        learnable_queries_bs = self.learnable_queries.weight.repeat(bs,1,1)
         # print(learnable_queries_bs.shape)
         for lvl in range(hs.shape[0]):
             # final_query = hs[lvl].permute(0,2,1)
@@ -122,7 +121,7 @@ class ConditionalDETR(nn.Module):
             learnable_queries_bs = self.norm1(learnable_queries_bs)
             tgt2 = self.linear2(self.dropout2(self.activation(self.linear1(learnable_queries_bs))))
             learnable_queries_bs = learnable_queries_bs + self.dropout3(tgt2)
-            learnable_queries_bs = self.norm3(learnable_queries_bs).transpose(0,1)
+            learnable_queries_bs = self.norm2(learnable_queries_bs).transpose(0,1)
 
             final_queries.append(learnable_queries_bs)
             tmp = self.bbox_embed(learnable_queries_bs)
