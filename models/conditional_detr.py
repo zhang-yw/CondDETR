@@ -62,6 +62,10 @@ class ConditionalDETR(nn.Module):
         self.cross_attn = MultiheadAttention(hidden_dim, nhead, dropout=dropout, vdim=hidden_dim)
         self.dropout1 = nn.Dropout(dropout)
         self.norm1 = nn.LayerNorm(hidden_dim)
+        self.linear1 = nn.Linear(hidden_dim, 2048)
+        self.dropout2 = nn.Dropout(dropout)
+        self.linear2 = nn.Linear(2048, hidden_dim)
+        self.norm2 = nn.LayerNorm(hidden_dim)
         # init prior_prob setting for focal loss
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -110,9 +114,11 @@ class ConditionalDETR(nn.Module):
             k = self.ca_k_proj(queries_before_ca)
             v = self.ca_v_proj(queries_before_ca)
             print(k.shape)
-            tgt = self.cross_attn(q, k, value=v)[0]
+            tgt = self.cross_attn(query=q, key=k, value=v)[0]
             learnable_queries_bs = learnable_queries_bs + self.dropout1(tgt)
             learnable_queries_bs = self.norm1(learnable_queries_bs).transpose(0,1)
+
+
             final_queries.append(learnable_queries_bs)
             tmp = self.bbox_embed(learnable_queries_bs)
             tmp[..., :2] += learnbale_reference_before_sigmoid
