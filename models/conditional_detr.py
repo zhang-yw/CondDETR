@@ -106,14 +106,15 @@ class ConditionalDETR(nn.Module):
         outputs_coords = []
         final_queries = []
         learnbale_reference_before_sigmoid = self.learnable_reference_points.weight.repeat(bs,1,1)
-        learnable_queries_bs = self.learnable_queries.weight.unsqueeze(1).repeat(1,bs,1)
+        learnable_queries_bs = self.learnable_queries.weight.unsqueeze(1).repeat(bs,1,1)
         # print(learnable_queries_bs.shape)
         for lvl in range(hs.shape[0]):
             # final_query = hs[lvl].permute(0,2,1)
             # final_query = self.final_proj(final_query).permute(0,2,1)
             queries_before_ca = hs[lvl].transpose(0,1)
             # print(queries_before_ca.shape)
-            q = self.ca_q_proj(learnable_queries_bs.transpose(0,1))
+            learnable_queries_bs = learnable_queries_bs.transpose(0,1)
+            q = self.ca_q_proj(learnable_queries_bs)
             k = self.ca_k_proj(queries_before_ca)
             v = self.ca_v_proj(queries_before_ca)
             tgt = self.cross_attn(query=q, key=k, value=v)[0]
@@ -122,7 +123,7 @@ class ConditionalDETR(nn.Module):
             tgt2 = self.linear2(self.dropout2(self.activation(self.linear1(learnable_queries_bs))))
             learnable_queries_bs = learnable_queries_bs + self.dropout3(tgt2)
             learnable_queries_bs = self.norm3(learnable_queries_bs).transpose(0,1)
-            
+
             final_queries.append(learnable_queries_bs)
             tmp = self.bbox_embed(learnable_queries_bs)
             tmp[..., :2] += learnbale_reference_before_sigmoid
