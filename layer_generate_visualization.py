@@ -138,7 +138,7 @@ for fname in filenames:
 
     for hook in hooks:
         hook.remove()
-    print(dec_attn_weights.shape)
+    print(dec_attn_weights[0].shape)
     exit(0)
     # don't need the list anymore
     conv_features = conv_features[0]
