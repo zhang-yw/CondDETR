@@ -130,8 +130,8 @@ for fname in filenames:
     # don't need the list anymore
     conv_features = conv_features[0]
     enc_attn_weights = enc_attn_weights[0]
-    dec_attn_weights = dec_attn_weights[0]
-    final_dec_attn_weights = final_dec_attn_weights[0]
+    dec_attn_weights = dec_attn_weights[0][0]
+    final_dec_attn_weights = final_dec_attn_weights[0][0]
     # print(dec_attn_weights.shape)
     # print(final_dec_attn_weights.shape)
 
