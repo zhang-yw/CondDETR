@@ -2,7 +2,7 @@ import os
  
 html = ""
 
-path = "/Users/yw-zhang/Downloads/5_mlp_att"
+path = "/Users/yw-zhang/Downloads/5_cross_att_layer"
 fname = "index.html"
 
 for file in os.listdir(path):
