@@ -76,7 +76,7 @@ def plot_results(pil_img, prob, boxes):
     plt.axis('off')
     plt.show()
 
-checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/cross_attention+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
+checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/5queries_cross_attention+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
 
 model, criterion, postprocessors = build_model(checkpoint['args'])
 model.load_state_dict(checkpoint['model'])
@@ -127,7 +127,7 @@ for fname in filenames:
     # don't need the list anymore
     conv_features = conv_features[0]
     enc_attn_weights = enc_attn_weights[0]
-    dec_attn_weights = dec_attn_weights[0]
+    dec_attn_weights = dec_attn_weights[0][0]
     print(dec_attn_weights.shape)
 
     # get the feature map shape
@@ -137,36 +137,36 @@ for fname in filenames:
 
     fig, axs = plt.subplots(ncols=21, nrows=1, squeeze=False, figsize=(80, 7))
     colors = COLORS * 100
-    counter = 0
-    for ax_i in axs.T:
+    # counter = 0
+    # for ax_i in axs.T:
+    #     ax = ax_i[0]
+    #     if counter == 0:
+    #         ax.imshow(im)
+    #         for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
+    #             ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+    #                                     fill=False, color=c, linewidth=3))
+    #             cl = p.argmax()
+    #             text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+    #             ax.text(xmin, ymin, text, fontsize=15,
+    #                     bbox=dict(facecolor='yellow', alpha=0.5))
+    #         ax.axis('off')
+    #     else:
+    #         ax.imshow(dec_attn_weights[0, counter - 1].view(h, w))
+    #         ax.axis('off')
+    #     counter += 1
+    # fig.tight_layout()
+    # plt.savefig(os.path.join(save_path, fname))
+    for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
         ax = ax_i[0]
-        if counter == 0:
-            ax.imshow(im)
-            for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
-                ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
-                                        fill=False, color=c, linewidth=3))
-                cl = p.argmax()
-                text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-                ax.text(xmin, ymin, text, fontsize=15,
-                        bbox=dict(facecolor='yellow', alpha=0.5))
-            ax.axis('off')
-        else:
-            ax.imshow(dec_attn_weights[0, counter - 1].view(h, w))
-            ax.axis('off')
-        counter += 1
+        ax.imshow(dec_attn_weights[0, idx].view(h, w))
+        ax.axis('off')
+        ax.set_title(f'query id: {idx.item()}')
+        ax = ax_i[1]
+        ax.imshow(im)
+        ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+                                fill=False, color='blue', linewidth=3))
+        ax.axis('off')
+        ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item()))
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
-    # for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
-    #     ax = ax_i[0]
-    #     ax.imshow(dec_attn_weights[0, idx].view(h, w))
-    #     ax.axis('off')
-    #     ax.set_title(f'query id: {idx.item()}')
-    #     ax = ax_i[1]
-    #     ax.imshow(im)
-    #     ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
-    #                             fill=False, color='blue', linewidth=3))
-    #     ax.axis('off')
-    #     ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item()))
-    # fig.tight_layout()
-    # plt.savefig(os.path.join(save_path_2, fname))
 
