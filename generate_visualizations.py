@@ -137,7 +137,10 @@ for fname in filenames:
     fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=2, figsize=(22, 7))
     colors = COLORS * 100
     for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
-        ax = ax_i[0]
+        if len(bboxes_scaled) == 1:
+            ax = ax_i
+        else:
+            ax = ax_i[0]
         ax.imshow(dec_attn_weights[0, idx].view(h, w))
         ax.axis('off')
         ax.set_title(f'query id: {idx.item()}')
