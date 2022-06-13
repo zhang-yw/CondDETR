@@ -16,8 +16,7 @@ from models import build_model
 import shutil, random, os
 random.seed(0)
 val_path = "/nobackup/yiwei/coco/images/val2017"
-save_path = "/nobackup/yiwei/coco/images/5_conddetr"
-save_path_2 = "/nobackup/yiwei/coco/images/20_conddetr_att"
+save_path = "/nobackup/yiwei/coco/images/5_conddetr_att"
 
 # COCO classes
 CLASSES = [
@@ -76,7 +75,7 @@ def plot_results(pil_img, prob, boxes):
     plt.axis('off')
     plt.show()
 
-checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/20_conddetr_r50dc5_epoch50/checkpoint0049.pth")
+checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/5queries_conddetr_r50_epoch50/checkpoint0049.pth")
 
 model, criterion, postprocessors = build_model(checkpoint['args'])
 model.load_state_dict(checkpoint['model'])
@@ -134,7 +133,7 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=2, squeeze=False, figsize=(80, 7))
+    fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=2, squeeze=False, figsize=(22, 7))
     colors = COLORS * 100
     for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
         ax = ax_i[0]
