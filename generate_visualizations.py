@@ -147,5 +147,5 @@ for fname in filenames:
         ax.axis('off')
         ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item()))
     fig.tight_layout()
-    plt.savefig(os.path.join(save_path_2, fname))
+    plt.savefig(os.path.join(save_path, fname))
 
