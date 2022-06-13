@@ -146,7 +146,7 @@ for fname in filenames:
         ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                 fill=False, color='blue', linewidth=3))
         ax.axis('off')
-        ax.set_title(str(CLASSES[probas[idx].argmax()])+str(probas.max(-1).values[idx].item()))
+        ax.set_title(str(CLASSES[probas[idx].argmax()])+"{:.3f}".format(probas.max(-1).values[idx].item()))
     fig.tight_layout()
     plt.savefig(os.path.join(save_path_2, fname))
 
