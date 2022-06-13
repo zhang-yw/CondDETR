@@ -95,7 +95,7 @@ for fname in filenames:
 
     # keep only predictions with 0.7+ confidence
     probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
-    keep = probas.max(-1).values > 0.5
+    keep = probas.max(-1).values > 0.0
 
     # convert boxes from [0; 1] to image scales
     bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
