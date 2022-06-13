@@ -104,7 +104,7 @@ for fname in filenames:
     # plt.savefig(os.path.join(save_path, fname))
 
     # use lists to store the outputs via up-values
-    conv_features, enc_attn_weights, dec_attn_weights = [], [], []
+    conv_features, enc_attn_weights, final_dec_attn_weights, dec_attn_weights = [], [], [], []
 
     hooks = [
         model.backbone[-2].register_forward_hook(
@@ -114,7 +114,10 @@ for fname in filenames:
             lambda self, input, output: enc_attn_weights.append(output[1])
         ),
         model.cross_attn.register_forward_hook(
-            lambda self, input, output: dec_attn_weights.append(output[1])
+            lambda self, input, output: final_dec_attn_weights.append(output[1])
+        ),
+        model.transformer.decoder.layers[-1].cross_attn.register_forward_hook(
+        lambda self, input, output: dec_attn_weights.append(output[1])
         ),
     ]
 
@@ -128,14 +131,14 @@ for fname in filenames:
     conv_features = conv_features[0]
     enc_attn_weights = enc_attn_weights[0]
     dec_attn_weights = dec_attn_weights[0][0]
-    print(dec_attn_weights.shape)
+    final_dec_attn_weights = final_dec_attn_weights[0][0]
 
     # get the feature map shape
     h, w = conv_features['0'].tensors.shape[-2:]
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=21, nrows=1, squeeze=False, figsize=(80, 7))
+    fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=2, squeeze=False, figsize=(22, 7))
     colors = COLORS * 100
     # counter = 0
     # for ax_i in axs.T:
@@ -158,7 +161,10 @@ for fname in filenames:
     # plt.savefig(os.path.join(save_path, fname))
     for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
         ax = ax_i[0]
-        ax.imshow(dec_attn_weights[0, idx].view(h, w))
+        dec_attn_weights  = dec_attn_weights
+        final_dec_attn_weights = final_dec_attn_weights[idx]
+        show = final_dec_attn_weights*dec_attn_weights
+        ax.imshow(show.view(h, w))
         ax.axis('off')
         ax.set_title(f'query id: {idx.item()}')
         ax = ax_i[1]
