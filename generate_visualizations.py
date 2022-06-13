@@ -16,7 +16,7 @@ from models import build_model
 import shutil, random, os
 random.seed(0)
 val_path = "/nobackup/yiwei/coco/images/val2017"
-save_path = "/nobackup/yiwei/coco/images/20_cross_att"
+save_path = "m"
 # save_path_2 = "/nobackup/yiwei/coco/images/20_conddetr_att"
 
 # COCO classes
@@ -134,7 +134,7 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=6, nrows=1, squeeze=False, figsize=(22, 7))
+    fig, axs = plt.subplots(ncols=6, nrows=1, squeeze=False, figsize=(80, 7))
     colors = COLORS * 100
     counter = 0
     for ax_i in axs.T:
