@@ -164,6 +164,7 @@ for fname in filenames:
     for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
         ax = ax_i[0]
         dec_attn_weights  = dec_attn_weights
+        print("s" + final_dec_attn_weights.shape)
         final_dec_attn_weights = final_dec_attn_weights[idx][0]
         # print(final_dec_attn_weights.shape)
         # print(dec_attn_weights.shape)
