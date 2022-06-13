@@ -166,6 +166,7 @@ for fname in filenames:
         # print(final_dec_attn_weights.shape)
         # print(dec_attn_weights.shape)
         show = final_dec_attn_weights[0]*dec_attn_weights[0][0]
+        print(show.shape)
         for i in range(4):
             show += final_dec_attn_weights[i+1]*dec_attn_weights[i+1][0]
         ax.imshow(show.view(h, w))
