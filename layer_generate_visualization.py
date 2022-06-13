@@ -141,7 +141,7 @@ for fname in filenames:
     # don't need the list anymore
     conv_features = conv_features[0]
     enc_attn_weights = enc_attn_weights[0]
-    dec_attn_weights = dec_attn_weights[0]
+    dec_attn_weights = dec_attn_weights
 
     # get the feature map shape
     h, w = conv_features['0'].tensors.shape[-2:]
