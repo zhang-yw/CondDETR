@@ -76,7 +76,7 @@ def plot_results(pil_img, prob, boxes):
     plt.axis('off')
     plt.show()
 
-checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/cross_attention+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
+checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/5queries_cross_attention+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
 
 model, criterion, postprocessors = build_model(checkpoint['args'])
 model.load_state_dict(checkpoint['model'])
@@ -113,7 +113,22 @@ for fname in filenames:
         model.transformer.encoder.layers[-1].self_attn.register_forward_hook(
             lambda self, input, output: enc_attn_weights.append(output[1])
         ),
-        model.transformer.decoder.layers[-1].cross_attn.register_forward_hook(
+        model.transformer.decoder.layers[0].cross_attn.register_forward_hook(
+            lambda self, input, output: dec_attn_weights.append(output[1])
+        ),
+        model.transformer.decoder.layers[1].cross_attn.register_forward_hook(
+            lambda self, input, output: dec_attn_weights.append(output[1])
+        ),
+        model.transformer.decoder.layers[2].cross_attn.register_forward_hook(
+            lambda self, input, output: dec_attn_weights.append(output[1])
+        ),
+        model.transformer.decoder.layers[3].cross_attn.register_forward_hook(
+            lambda self, input, output: dec_attn_weights.append(output[1])
+        ),
+        model.transformer.decoder.layers[4].cross_attn.register_forward_hook(
+            lambda self, input, output: dec_attn_weights.append(output[1])
+        ),
+        model.transformer.decoder.layers[5].cross_attn.register_forward_hook(
             lambda self, input, output: dec_attn_weights.append(output[1])
         ),
     ]
@@ -123,7 +138,8 @@ for fname in filenames:
 
     for hook in hooks:
         hook.remove()
-
+    print(dec_attn_weights.shape)
+    exit(0)
     # don't need the list anymore
     conv_features = conv_features[0]
     enc_attn_weights = enc_attn_weights[0]
