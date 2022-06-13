@@ -130,8 +130,8 @@ for fname in filenames:
     # don't need the list anymore
     conv_features = conv_features[0]
     enc_attn_weights = enc_attn_weights[0]
-    dec_attn_weights = dec_attn_weights[0][0]
-    final_dec_attn_weights = final_dec_attn_weights[0][0]
+    dec_attn_weights = dec_attn_weights[0]
+    final_dec_attn_weights = final_dec_attn_weights[0]
     print(dec_attn_weights.shape)
     print(final_dec_attn_weights.shape)
 
@@ -163,15 +163,13 @@ for fname in filenames:
     # plt.savefig(os.path.join(save_path, fname))
     for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
         ax = ax_i[0]
-        dec_attn_weights  = dec_attn_weights
-        print("s" + str(final_dec_attn_weights.shape))
-        final_dec_attn_weights = final_dec_attn_weights[idx][0]
+        final_dec_attn_weights_idx = final_dec_attn_weights[idx][0]
         # print(final_dec_attn_weights.shape)
         # print(dec_attn_weights.shape)
-        show = final_dec_attn_weights[0]*dec_attn_weights[0]
+        show = final_dec_attn_weights_idx[0]*dec_attn_weights[0]
         print(show.shape)
         for i in range(4):
-            show += final_dec_attn_weights[i+1]*dec_attn_weights[i+1]
+            show += final_dec_attn_weights_idx[i+1]*dec_attn_weights[i+1]
         ax.imshow(show.view(h, w))
         ax.axis('off')
         ax.set_title(f'query id: {idx.item()}')
