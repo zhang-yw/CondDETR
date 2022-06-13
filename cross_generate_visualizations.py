@@ -163,6 +163,8 @@ for fname in filenames:
         ax = ax_i[0]
         dec_attn_weights  = dec_attn_weights
         final_dec_attn_weights = final_dec_attn_weights[idx]
+        print(final_dec_attn_weights.shape)
+        print(dec_attn_weights.shape)
         show = final_dec_attn_weights*dec_attn_weights
         ax.imshow(show.view(h, w))
         ax.axis('off')
