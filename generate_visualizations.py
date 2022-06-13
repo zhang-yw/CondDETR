@@ -61,7 +61,7 @@ def rescale_bboxes(out_bbox, size):
     return b
 
 def plot_results(pil_img, prob, boxes):
-    plt.figure(figsize=(16,10))
+    plt.figure()
     plt.imshow(pil_img)
     ax = plt.gca()
     colors = COLORS * 100
