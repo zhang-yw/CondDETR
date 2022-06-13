@@ -76,7 +76,7 @@ def plot_results(pil_img, prob, boxes):
     plt.axis('off')
     plt.show()
 
-checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/MLP+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
+checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/5queries_MLP+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
 
 model, criterion, postprocessors = build_model(checkpoint['args'])
 model.load_state_dict(checkpoint['model'])
@@ -134,7 +134,7 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=21, nrows=1, squeeze=False, figsize=(80, 7))
+    fig, axs = plt.subplots(ncols=6, nrows=1, squeeze=False, figsize=(22, 7))
     colors = COLORS * 100
     counter = 0
     for ax_i in axs.T:
