@@ -16,7 +16,7 @@ from models import build_model
 import shutil, random, os
 random.seed(0)
 val_path = "/nobackup/yiwei/coco/images/val2017"
-save_path = "/nobackup/yiwei/coco/images/5_cross_att"
+save_path = "/nobackup/yiwei/coco/images/5_cross_att_layer"
 # save_path_2 = "/nobackup/yiwei/coco/images/20_conddetr_att"
 
 # COCO classes
@@ -138,8 +138,6 @@ for fname in filenames:
 
     for hook in hooks:
         hook.remove()
-    print(dec_attn_weights[0].shape)
-    exit(0)
     # don't need the list anymore
     conv_features = conv_features[0]
     enc_attn_weights = enc_attn_weights[0]
@@ -166,7 +164,7 @@ for fname in filenames:
                         bbox=dict(facecolor='yellow', alpha=0.5))
             ax.axis('off')
         else:
-            ax.imshow(dec_attn_weights[0, counter - 1].view(h, w))
+            ax.imshow(dec_attn_weights[counter - 1][0, 0].view(h, w))
             ax.axis('off')
         counter += 1
     fig.tight_layout()
