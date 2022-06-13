@@ -131,6 +131,8 @@ for fname in filenames:
 
     # get the feature map shape
     h, w = conv_features['0'].tensors.shape[-2:]
+    if len(keep.nonzero()) == 0:
+        continue
 
     fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=2, figsize=(22, 7))
     colors = COLORS * 100
