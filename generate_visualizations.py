@@ -17,6 +17,7 @@ import shutil, random, os
 random.seed(0)
 val_path = "/nobackup/yiwei/coco/images/val2017"
 save_path = "/nobackup/yiwei/coco/images/5_conddetr"
+save_path_2 = "/nobackup/yiwei/coco/images/5_conddetr_att"
 
 # COCO classes
 CLASSES = [
@@ -99,5 +100,25 @@ for fname in filenames:
     # convert boxes from [0; 1] to image scales
     bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
 
-    plot_results(im, probas[keep], bboxes_scaled)
-    plt.savefig(os.path.join(save_path, fname))
+    # plot_results(im, probas[keep], bboxes_scaled)
+    # plt.savefig(os.path.join(save_path, fname))
+
+    # get the feature map shape
+    h, w = conv_features['0'].tensors.shape[-2:]
+
+    fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=2, figsize=(22, 7))
+    colors = COLORS * 100
+    for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
+        ax = ax_i[0]
+        ax.imshow(dec_attn_weights[0, idx].view(h, w))
+        ax.axis('off')
+        ax.set_title(f'query id: {idx.item()}')
+        ax = ax_i[1]
+        ax.imshow(im)
+        ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+                                fill=False, color='blue', linewidth=3))
+        ax.axis('off')
+        ax.set_title(CLASSES[probas[idx].argmax()])
+    fig.tight_layout()
+    plt.savefig(os.path.join(save_path_2, fname))
+
