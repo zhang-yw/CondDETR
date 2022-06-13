@@ -16,7 +16,7 @@ from models import build_model
 import shutil, random, os
 random.seed(0)
 val_path = "/nobackup/yiwei/coco/images/val2017"
-save_path = "/nobackup/yiwei/coco/images/val2017/20_conddetr"
+save_path = "/nobackup/yiwei/coco/images/20_conddetr"
 
 # COCO classes
 CLASSES = [
