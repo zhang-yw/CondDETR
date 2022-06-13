@@ -134,7 +134,7 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=6, nrows=1, squeeze=False, figsize=(80, 7))
+    fig, axs = plt.subplots(ncols=21, nrows=1, squeeze=False, figsize=(80, 7))
     colors = COLORS * 100
     counter = 0
     for ax_i in axs.T:
