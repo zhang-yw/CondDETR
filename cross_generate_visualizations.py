@@ -163,9 +163,11 @@ for fname in filenames:
         ax = ax_i[0]
         dec_attn_weights  = dec_attn_weights
         final_dec_attn_weights = final_dec_attn_weights[idx][0]
-        print(final_dec_attn_weights.shape)
-        print(dec_attn_weights.shape)
-        show = final_dec_attn_weights*dec_attn_weights
+        # print(final_dec_attn_weights.shape)
+        # print(dec_attn_weights.shape)
+        show = final_dec_attn_weights[0]*dec_attn_weights[0][0]
+        for i in range(4):
+            show += final_dec_attn_weights[i+1]*dec_attn_weights[i+1][0]
         ax.imshow(show.view(h, w))
         ax.axis('off')
         ax.set_title(f'query id: {idx.item()}')
