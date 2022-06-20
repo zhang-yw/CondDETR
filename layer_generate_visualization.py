@@ -88,6 +88,24 @@ filenames = ['000000270705.jpg']
 for fname in filenames:
     srcpath = os.path.join(val_path, fname)
     im = Image.open(srcpath)
+    bg = im
+    # The width and height of the background tile
+    bg_w, bg_h = bg.size
+
+    # Creates a new empty image, RGB mode, and size 1000 by 1000
+    new_im = Image.new('RGB', (bg_w*4,bg_h*4))
+
+    # The width and height of the new image
+    w, h = new_im.size
+
+    # Iterate through a grid, to place the background tile
+    for i in range(0, w, bg_w):
+        for j in range(0, h, bg_h):
+
+            #paste the image at location i, j:
+            new_im.paste(bg, (i, j))
+    
+    im = new_im.resize(im.size)
     # mean-std normalize the input image (batch-size: 1)
     img = transform(im).unsqueeze(0)
 
