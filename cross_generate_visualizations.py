@@ -173,7 +173,7 @@ for fname in filenames:
         # exit(0)
         show = final_dec_attn_weights_idx[0]*dec_attn_weights[0]
         # print(show.shape)
-        for i in range(4):
+        for i in range(1):
             show += final_dec_attn_weights_idx[i+1]*dec_attn_weights[i+1]
         ax.imshow(show.view(h, w))
         ax.axis('off')
