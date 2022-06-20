@@ -183,7 +183,8 @@ for fname in filenames:
         ax.imshow(im)
         ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                 fill=False, color='blue', linewidth=3))
-        ax.add_patch(plt.Circle((reference_points[idx][0][0]*w, reference_points[idx][0][1]*h), 10, color='r'))                        
+        img_w, img_h = im.size
+        ax.add_patch(plt.Circle((reference_points[idx][0][0]*img_w, reference_points[idx][0][1]*img_h), 10, color='r'))                        
         ax.axis('off')
         ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item()))
     fig.tight_layout()
