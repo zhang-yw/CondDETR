@@ -76,7 +76,7 @@ def plot_results(pil_img, prob, boxes):
     plt.axis('off')
     plt.show()
 
-checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/5queries_MLP+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
+checkpoint = torch.load("/nobackup/yiwei/CondDETR/output/MLP+LearnableRef_conddetr_r50_epoch50/checkpoint0049.pth")
 
 model, criterion, postprocessors = build_model(checkpoint['args'])
 model.load_state_dict(checkpoint['model'])
@@ -167,24 +167,24 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=6, nrows=6, squeeze=False, figsize=(22, 21))
+    fig, axs = plt.subplots(ncols=21, nrows=6, squeeze=False, figsize=(22, 21))
     colors = COLORS * 100
 
     for row in range(6):
-        for col in range(6):
+        for col in range(21):
             ax = axs[row][col]
             if col == 0:
                 ax.imshow(im)
                 if row == 5:
                     # keep only predictions with 0.7+ confidence
                     probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
-                    keep = probas.max(-1).values > 0.3
+                    keep = probas.max(-1).values > 0.5
 
                     # convert boxes from [0; 1] to image scales
                     bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
                 else:
                     probas = outputs['aux_outputs'][row]['pred_logits'].softmax(-1)[0, :, :-1]
-                    keep = probas.max(-1).values > 0.3
+                    keep = probas.max(-1).values > 0.5
 
                     bboxes_scaled = rescale_bboxes(outputs['aux_outputs'][row]['pred_boxes'][0, keep], im.size)
                 for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
@@ -192,8 +192,8 @@ for fname in filenames:
                                             fill=False, color=c, linewidth=3))
                     cl = p.argmax()
                     text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-                    # ax.text(xmin, ymin, text, fontsize=15,
-                    #         bbox=dict(facecolor='yellow', alpha=0.5))
+                    ax.text(xmin, ymin, text, fontsize=15,
+                            bbox=dict(facecolor='yellow', alpha=0.5))
                 ax.set_title(f"Layer {row+1}, outputs")
                 ax.axis('off')
             else:
