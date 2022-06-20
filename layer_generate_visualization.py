@@ -150,7 +150,6 @@ for fname in filenames:
 
     fig, axs = plt.subplots(ncols=6, nrows=6, squeeze=False, figsize=(22, 7))
     colors = COLORS * 100
-    counter = 0
 
     for row in range(6):
         for col in range(6):
@@ -178,7 +177,7 @@ for fname in filenames:
                             bbox=dict(facecolor='yellow', alpha=0.5))
                 ax.axis('off')
             else:
-                ax.imshow(dec_attn_weights[counter - 1][0, col-1].view(h, w))
+                ax.imshow(dec_attn_weights[row][0, col-1].view(h, w))
                 ax.axis('off')
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
