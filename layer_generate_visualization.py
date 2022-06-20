@@ -179,7 +179,7 @@ for fname in filenames:
                 ax.axis('off')
             else:
                 ax.imshow(dec_attn_weights[row][0, col-1].view(h, w))
-                ax.set_title(f"Layer {row+1}, Query {col+1}")
+                ax.set_title(f"Layer {row+1}, Query {col}")
                 ax.axis('off')
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
