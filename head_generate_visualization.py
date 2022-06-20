@@ -159,10 +159,12 @@ for fname in filenames:
                 ax.set_title("Final outputs")
                 ax.axis('off')
             else:
-                ax.imshow(dec_attn_weights[0][0, row, col-1].view(h, w))
                 if row <= 7:
+                    ax.imshow(dec_attn_weights[0][0, row, col-1].view(h, w))
                     ax.set_title(f"Head {row+1}, Query {col}")
                 else:
+                    attens = dec_attn_weights[0].sum(dim=1) / 8
+                    ax.imshow(attens[0][0][col-1].view(h, w))
                     ax.set_title(f"Averaged Query {col}")
                 ax.axis('off')
     fig.tight_layout()
