@@ -93,7 +93,7 @@ for fname in filenames:
     bg_w, bg_h = bg.size
 
     # Creates a new empty image, RGB mode, and size 1000 by 1000
-    new_im = Image.new('RGB', (bg_w*4,bg_h*4))
+    new_im = Image.new('RGB', (bg_w*6,bg_h*6))
 
     # The width and height of the new image
     w, h = new_im.size
