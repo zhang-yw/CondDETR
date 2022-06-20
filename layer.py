@@ -192,8 +192,8 @@ for fname in filenames:
                                             fill=False, color=c, linewidth=3))
                     cl = p.argmax()
                     text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-                    ax.text(xmin, ymin, text, fontsize=15,
-                            bbox=dict(facecolor='yellow', alpha=0.5))
+                    # ax.text(xmin, ymin, text, fontsize=15,
+                    #         bbox=dict(facecolor='yellow', alpha=0.5))
                 ax.set_title(f"Layer {row+1}, outputs")
                 ax.axis('off')
             else:
