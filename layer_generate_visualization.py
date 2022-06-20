@@ -153,7 +153,7 @@ for fname in filenames:
     counter = 0
     for ax_i in axs.T:
         ax = ax_i[0]
-        print(dec_attn_weights.shape)
+        print(dec_attn_weights[0].shape)
         if counter == 0:
             ax.imshow(im)
             for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
