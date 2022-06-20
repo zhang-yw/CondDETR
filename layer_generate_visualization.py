@@ -151,11 +151,42 @@ for fname in filenames:
     fig, axs = plt.subplots(ncols=6, nrows=6, squeeze=False, figsize=(22, 7))
     colors = COLORS * 100
     counter = 0
+
+    for row in range(6):
+        for col in range(6):
+            ax = axs[row][col]
+            if col == 0:
+                ax.imshow(im)
+                if row == 5:
+                    # keep only predictions with 0.7+ confidence
+                    probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
+                    keep = probas.max(-1).values > 0.5
+
+                    # convert boxes from [0; 1] to image scales
+                    bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
+                else:
+                    probas = outputs['aux_outputs'][row]['pred_logits'].softmax(-1)[0, :, :-1]
+                    keep = probas.max(-1).values > 0.5
+
+                    bboxes_scaled = rescale_bboxes(outputs['aux_outputs'][row]['pred_boxes'][0, keep], im.size)
+                for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
+                    ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+                                            fill=False, color=c, linewidth=3))
+                    cl = p.argmax()
+                    text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+                    ax.text(xmin, ymin, text, fontsize=15,
+                            bbox=dict(facecolor='yellow', alpha=0.5))
+                ax.axis('off')
+            else:
+                ax.imshow(dec_attn_weights[counter - 1][0, col-1].view(h, w))
+                ax.axis('off')
+    fig.tight_layout()
+    plt.savefig(os.path.join(save_path, fname))
+
+    exit(0)
     for ax_i in axs.T:
-        print(ax_i)
-        exit(0)
         ax = ax_i[0]
-        print(dec_attn_weights[0].shape)
+        # print(dec_attn_weights[0].shape)
         if counter == 0:
             ax.imshow(im)
             for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
