@@ -113,21 +113,6 @@ for fname in filenames:
         model.transformer.encoder.layers[-1].self_attn.register_forward_hook(
             lambda self, input, output: enc_attn_weights.append(output[1])
         ),
-        model.transformer.decoder.layers[0].cross_attn.register_forward_hook(
-            lambda self, input, output: dec_attn_weights.append(output[1])
-        ),
-        model.transformer.decoder.layers[1].cross_attn.register_forward_hook(
-            lambda self, input, output: dec_attn_weights.append(output[1])
-        ),
-        model.transformer.decoder.layers[2].cross_attn.register_forward_hook(
-            lambda self, input, output: dec_attn_weights.append(output[1])
-        ),
-        model.transformer.decoder.layers[3].cross_attn.register_forward_hook(
-            lambda self, input, output: dec_attn_weights.append(output[1])
-        ),
-        model.transformer.decoder.layers[4].cross_attn.register_forward_hook(
-            lambda self, input, output: dec_attn_weights.append(output[1])
-        ),
         model.transformer.decoder.layers[5].cross_attn.register_forward_hook(
             lambda self, input, output: dec_attn_weights.append(output[1])
         ),
@@ -153,7 +138,7 @@ for fname in filenames:
     fig, axs = plt.subplots(ncols=6, nrows=9, squeeze=False, figsize=(22, 32))
     colors = COLORS * 100
 
-    for row in range(6):
+    for row in range(9):
         for col in range(6):
             ax = axs[row][col]
             if col == 0:
@@ -174,7 +159,7 @@ for fname in filenames:
                 ax.set_title("Final outputs")
                 ax.axis('off')
             else:
-                ax.imshow(dec_attn_weights[5][0, row, col-1].view(h, w))
+                ax.imshow(dec_attn_weights[0][0, row, col-1].view(h, w))
                 if row <= 7:
                     ax.set_title(f"Head {row+1}, Query {col}")
                 else:
