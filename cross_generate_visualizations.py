@@ -178,7 +178,7 @@ for fname in filenames:
         ax.axis('off')
         ax.set_title(f'query id: {idx.item()}')
         ax = ax_i[1]
-        ax.text(final_dec_attn_weights_idx)
+        ax.text(0,0,final_dec_attn_weights_idx)
         ax = ax_i[2]
         ax.imshow(im)
         ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
