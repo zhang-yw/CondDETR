@@ -148,10 +148,12 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=7, nrows=1, squeeze=False, figsize=(22, 7))
+    fig, axs = plt.subplots(ncols=6, nrows=6, squeeze=False, figsize=(22, 7))
     colors = COLORS * 100
     counter = 0
     for ax_i in axs.T:
+        print(ax_i)
+        exit(0)
         ax = ax_i[0]
         print(dec_attn_weights[0].shape)
         if counter == 0:
