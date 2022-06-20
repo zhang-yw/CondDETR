@@ -183,26 +183,25 @@ for fname in filenames:
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
 
-    exit(0)
-    for ax_i in axs.T:
-        ax = ax_i[0]
-        # print(dec_attn_weights[0].shape)
-        if counter == 0:
-            ax.imshow(im)
-            for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
-                ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
-                                        fill=False, color=c, linewidth=3))
-                cl = p.argmax()
-                text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-                ax.text(xmin, ymin, text, fontsize=15,
-                        bbox=dict(facecolor='yellow', alpha=0.5))
-            ax.axis('off')
-        else:
-            ax.imshow(dec_attn_weights[counter - 1][0, 0].view(h, w))
-            ax.axis('off')
-        counter += 1
-    fig.tight_layout()
-    plt.savefig(os.path.join(save_path, fname))
+    # for ax_i in axs.T:
+    #     ax = ax_i[0]
+    #     # print(dec_attn_weights[0].shape)
+    #     if counter == 0:
+    #         ax.imshow(im)
+    #         for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
+    #             ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+    #                                     fill=False, color=c, linewidth=3))
+    #             cl = p.argmax()
+    #             text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
+    #             ax.text(xmin, ymin, text, fontsize=15,
+    #                     bbox=dict(facecolor='yellow', alpha=0.5))
+    #         ax.axis('off')
+    #     else:
+    #         ax.imshow(dec_attn_weights[counter - 1][0, 0].view(h, w))
+    #         ax.axis('off')
+    #     counter += 1
+    # fig.tight_layout()
+    # plt.savefig(os.path.join(save_path, fname))
     # for idx, ax_i, (xmin, ymin, xmax, ymax) in zip(keep.nonzero(), axs.T, bboxes_scaled):
     #     ax = ax_i[0]
     #     ax.imshow(dec_attn_weights[0, idx].view(h, w))
