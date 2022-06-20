@@ -150,7 +150,7 @@ for fname in filenames:
 
     # print(dec_attn_weights[5].shape)
 
-    fig, axs = plt.subplots(ncols=6, nrows=9, squeeze=False, figsize=(22, 21))
+    fig, axs = plt.subplots(ncols=6, nrows=9, squeeze=False, figsize=(22, 32))
     colors = COLORS * 100
 
     for row in range(6):
@@ -174,11 +174,11 @@ for fname in filenames:
                 ax.set_title("Final outputs")
                 ax.axis('off')
             else:
-                ax.imshow(dec_attn_weights[row][0, col-1].view(h, w))
+                ax.imshow(dec_attn_weights[5][0, row, col-1].view(h, w))
                 if row <= 7:
-                    ax.set_title(f"Head {row+1}, Query {col+1}")
+                    ax.set_title(f"Head {row+1}, Query {col}")
                 else:
-                    ax.set_title(f"Head {row+1}, Query {col+1}")
+                    ax.set_title(f"Averaged Query {col}")
                 ax.axis('off')
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
