@@ -16,7 +16,7 @@ from models import build_model
 import shutil, random, os
 random.seed(0)
 val_path = "/nobackup/yiwei/coco/images/val2017"
-save_path = "/nobackup/yiwei/coco/images/5_cross_att_layer"
+save_path = "/nobackup/yiwei/coco/images/vis/5_cross_att_layer"
 # save_path_2 = "/nobackup/yiwei/coco/images/20_conddetr_att"
 
 # COCO classes
@@ -153,6 +153,7 @@ for fname in filenames:
     counter = 0
     for ax_i in axs.T:
         ax = ax_i[0]
+        print(dec_attn_weights.shape)
         if counter == 0:
             ax.imshow(im)
             for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
