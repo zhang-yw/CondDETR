@@ -136,7 +136,7 @@ for fname in filenames:
 
     # print(dec_attn_weights[5].shape)
 
-    fig, axs = plt.subplots(ncols=21, nrows=9, squeeze=False, figsize=(10, 32))
+    fig, axs = plt.subplots(ncols=2, nrows=9, squeeze=False, figsize=(10, 32))
     colors = COLORS * 100
 
     for row in range(9):
