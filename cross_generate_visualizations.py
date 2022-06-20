@@ -182,6 +182,7 @@ for fname in filenames:
         ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                 fill=False, color='blue', linewidth=3))
         print((reference_points[idx][0][0]*w, reference_points[idx][0][1]*h))
+        print((reference_points[idx][0][0], reference_points[idx][0][1]))
         exit(0)
         ax.add_patch(plt.Circle((reference_points[idx][0][0]*w, reference_points[idx][0][1]*h), 10, color='r'))                        
         ax.axis('off')
