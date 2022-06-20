@@ -175,9 +175,11 @@ for fname in filenames:
                     text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
                     ax.text(xmin, ymin, text, fontsize=15,
                             bbox=dict(facecolor='yellow', alpha=0.5))
+                ax.set_title(f"Layer {row+1}, outputs")
                 ax.axis('off')
             else:
                 ax.imshow(dec_attn_weights[row][0, col-1].view(h, w))
+                ax.set_title(f"Layer {row+1}, Query {col+1}")
                 ax.axis('off')
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
