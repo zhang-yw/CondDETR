@@ -142,7 +142,7 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=3, squeeze=False, figsize=(22, 7))
+    fig, axs = plt.subplots(ncols=len(bboxes_scaled), nrows=2, squeeze=False, figsize=(22, 7))
     colors = COLORS * 100
     # counter = 0
     # for ax_i in axs.T:
@@ -178,15 +178,13 @@ for fname in filenames:
         ax.axis('off')
         ax.set_title(f'query id: {idx.item()}')
         ax = ax_i[1]
-        ax.text(0,0,final_dec_attn_weights_idx)
-        ax = ax_i[2]
         ax.imshow(im)
         ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                 fill=False, color='blue', linewidth=3))
         img_w, img_h = im.size
         ax.add_patch(plt.Circle((reference_points[idx][0][0]*img_w, reference_points[idx][0][1]*img_h), 10, color='r'))                        
         ax.axis('off')
-        ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item()))
+        ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item() + "\n" + final_dec_attn_weights_idx))
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
 
