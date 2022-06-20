@@ -16,7 +16,7 @@ from models import build_model
 import shutil, random, os
 random.seed(0)
 val_path = "/nobackup/yiwei/coco/images/val2017"
-save_path = "/nobackup/yiwei/coco/images/5_cross_att_final"
+save_path = "/nobackup/yiwei/coco/images/vis/5_cross_att_final"
 # save_path_2 = "/nobackup/yiwei/coco/images/20_conddetr_att"
 
 # COCO classes
@@ -105,6 +105,8 @@ for fname in filenames:
 
     # use lists to store the outputs via up-values
     conv_features, enc_attn_weights, final_dec_attn_weights, dec_attn_weights = [], [], [], []
+    reference_points = torch.sigmoid(torch.Tensor(model.learnable_reference_points.weight))
+
 
     hooks = [
         model.backbone[-2].register_forward_hook(
@@ -166,8 +168,8 @@ for fname in filenames:
         final_dec_attn_weights_idx = final_dec_attn_weights[idx][0]
         # print(final_dec_attn_weights.shape)
         # print(dec_attn_weights.shape)
-        print(final_dec_attn_weights_idx)
-        exit(0)
+        # print(final_dec_attn_weights_idx)
+        # exit(0)
         show = final_dec_attn_weights_idx[0]*dec_attn_weights[0]
         # print(show.shape)
         for i in range(4):
@@ -179,6 +181,7 @@ for fname in filenames:
         ax.imshow(im)
         ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                 fill=False, color='blue', linewidth=3))
+        ax.add_patch(plt.Circle((reference_points[idx][0], reference_points[idx][1]), 10, color='r'))                        
         ax.axis('off')
         ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item()))
     fig.tight_layout()
