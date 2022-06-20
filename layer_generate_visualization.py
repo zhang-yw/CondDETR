@@ -149,11 +149,11 @@ for fname in filenames:
     if len(keep.nonzero()) == 0:
         continue
 
-    fig, axs = plt.subplots(ncols=21, nrows=6, squeeze=False, figsize=(10, 21))
+    fig, axs = plt.subplots(ncols=3, nrows=6, squeeze=False, figsize=(10, 21))
     colors = COLORS * 100
 
     for row in range(6):
-        for col in range(21):
+        for col in range(3):
             ax = axs[row][col]
             if col == 0:
                 ax.imshow(im)
