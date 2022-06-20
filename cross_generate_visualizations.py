@@ -185,7 +185,7 @@ for fname in filenames:
         ax.add_patch(plt.Circle((reference_points[idx][0][0]*img_w, reference_points[idx][0][1]*img_h), 10, color='r'))                        
         ax.axis('off')
         softmax = ['{:.2f}'.format(x) for x in final_dec_attn_weights_idx]
-        ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item() + "\n" + final_dec_attn_weights_idx))
+        ax.set_title(str(CLASSES[probas[idx].argmax()])+"   "+"{:.3f}".format(probas.max(-1).values[idx].item() + "\n" + softmax))
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
 
