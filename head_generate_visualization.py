@@ -150,7 +150,7 @@ for fname in filenames:
 
     # print(dec_attn_weights[5].shape)
 
-    fig, axs = plt.subplots(ncols=6, nrows=6, squeeze=False, figsize=(22, 21))
+    fig, axs = plt.subplots(ncols=6, nrows=9, squeeze=False, figsize=(22, 21))
     colors = COLORS * 100
 
     for row in range(6):
@@ -158,18 +158,12 @@ for fname in filenames:
             ax = axs[row][col]
             if col == 0:
                 ax.imshow(im)
-                if row == 5:
-                    # keep only predictions with 0.7+ confidence
-                    probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
-                    keep = probas.max(-1).values > 0.5
+                # keep only predictions with 0.7+ confidence
+                probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
+                keep = probas.max(-1).values > 0.5
 
-                    # convert boxes from [0; 1] to image scales
-                    bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
-                else:
-                    probas = outputs['aux_outputs'][row]['pred_logits'].softmax(-1)[0, :, :-1]
-                    keep = probas.max(-1).values > 0.5
-
-                    bboxes_scaled = rescale_bboxes(outputs['aux_outputs'][row]['pred_boxes'][0, keep], im.size)
+                # convert boxes from [0; 1] to image scales
+                bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
                 for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
                     ax.add_patch(plt.Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
                                             fill=False, color=c, linewidth=3))
@@ -177,9 +171,14 @@ for fname in filenames:
                     text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
                     ax.text(xmin, ymin, text, fontsize=15,
                             bbox=dict(facecolor='yellow', alpha=0.5))
+                ax.set_title("Final outputs")
                 ax.axis('off')
             else:
                 ax.imshow(dec_attn_weights[row][0, col-1].view(h, w))
+                if row <= 7:
+                    ax.set_title(f"Head {row+1}, Query {col+1}")
+                else:
+                    ax.set_title(f"Head {row+1}, Query {col+1}")
                 ax.axis('off')
     fig.tight_layout()
     plt.savefig(os.path.join(save_path, fname))
