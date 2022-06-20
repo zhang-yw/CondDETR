@@ -166,6 +166,7 @@ for fname in filenames:
         final_dec_attn_weights_idx = final_dec_attn_weights[idx][0]
         # print(final_dec_attn_weights.shape)
         # print(dec_attn_weights.shape)
+        print(final_dec_attn_weights_idx)
         show = final_dec_attn_weights_idx[0]*dec_attn_weights[0]
         # print(show.shape)
         for i in range(4):
