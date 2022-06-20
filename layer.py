@@ -71,8 +71,8 @@ def plot_results(pil_img, prob, boxes):
                                    fill=False, color=c, linewidth=3))
         cl = p.argmax()
         text = f'{CLASSES[cl]}: {p[cl]:0.2f}'
-        ax.text(xmin, ymin, text, fontsize=15,
-                bbox=dict(facecolor='yellow', alpha=0.5))
+        # ax.text(xmin, ymin, text, fontsize=15,
+        #         bbox=dict(facecolor='yellow', alpha=0.5))
     plt.axis('off')
     plt.show()
 
@@ -178,13 +178,13 @@ for fname in filenames:
                 if row == 5:
                     # keep only predictions with 0.7+ confidence
                     probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
-                    keep = probas.max(-1).values > 0.1
+                    keep = probas.max(-1).values > 0.3
 
                     # convert boxes from [0; 1] to image scales
                     bboxes_scaled = rescale_bboxes(outputs['pred_boxes'][0, keep], im.size)
                 else:
                     probas = outputs['aux_outputs'][row]['pred_logits'].softmax(-1)[0, :, :-1]
-                    keep = probas.max(-1).values > 0.1
+                    keep = probas.max(-1).values > 0.3
 
                     bboxes_scaled = rescale_bboxes(outputs['aux_outputs'][row]['pred_boxes'][0, keep], im.size)
                 for p, (xmin, ymin, xmax, ymax), c in zip(probas[keep], bboxes_scaled.tolist(), colors):
