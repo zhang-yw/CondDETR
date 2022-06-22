@@ -72,6 +72,15 @@ class ConditionalDETR(nn.Module):
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
         self.class_embed.bias.data = torch.ones(num_classes) * bias_value
+        self.dropout1 = nn.Dropout(dropout)
+        self.dropout2 = nn.Dropout(dropout)
+        self.dropout3 = nn.Dropout(dropout)
+        self.dropout4 = nn.Dropout(dropout)
+        self.norm1 = nn.LayerNorm(hidden_dim)
+        self.norm2 = nn.LayerNorm(hidden_dim)
+        self.norm3 = nn.LayerNorm(hidden_dim)
+        self.linear1 = nn.Linear(hidden_dim, 2048)
+        self.linear2 = nn.Linear(2048, hidden_dim)
 
         # init bbox_mebed
         nn.init.constant_(self.bbox_embed.layers[-1].weight.data, 0)
@@ -117,17 +126,25 @@ class ConditionalDETR(nn.Module):
             q = self.ca_q_proj(final_query)
             k = self.ca_k_proj(queries_before_ca)
             v = self.ca_v_proj(queries_before_ca)
-            final_query = self.cross_attn(query=q, key=k, value=v)[0]
+            tgt = self.cross_attn(query=q, key=k, value=v)[0]
+            final_query = final_query + self.dropout1(tgt)
+            final_query = self.norm1(final_query)
             #self-attention among final queries
             q = self.ca_q_proj_2(final_query)
             k = self.ca_k_proj_2(final_query)
             v = self.ca_v_proj_2(final_query)
-            final_query = self.cross_attn_2(query=q, key=k, value=v)[0]
+            tgt2 = self.cross_attn_2(query=q, key=k, value=v)[0]
+            final_query = final_query + self.dropout2(tgt2)
+            final_query = self.norm2(final_query)
             #cross-attention with distributed queries
             q = self.ca_q_proj_3(final_query)
             k = self.ca_k_proj_3(queries_before_ca)
             v = self.ca_v_proj_3(queries_before_ca)
-            final_query = self.cross_attn_3(query=q, key=k, value=v)[0]
+            tgt3 = self.cross_attn_3(query=q, key=k, value=v)[0]
+            final_query = final_query + self.dropout3(tgt3)
+            final_query = self.norm3(final_query)
+            tgt4 = self.linear2(self.dropout4(self.linear1(final_query)))
+            final_query = final_query + self.dropout4(tgt4)
             
             final_query = final_query.transpose(0,1)
             final_queries.append(final_query)
