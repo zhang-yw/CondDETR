@@ -60,14 +60,14 @@ class ConditionalDETR(nn.Module):
         self.ca_k_proj = nn.Linear(hidden_dim, hidden_dim)
         self.ca_v_proj = nn.Linear(hidden_dim, hidden_dim)
         self.cross_attn = MultiheadAttention(hidden_dim, nhead, dropout=dropout, vdim=hidden_dim)
-        self.dropout1 = nn.Dropout(dropout)
-        self.norm1 = nn.LayerNorm(hidden_dim)
-        self.linear1 = nn.Linear(hidden_dim, 2048)
-        self.dropout2 = nn.Dropout(dropout)
-        self.dropout3 = nn.Dropout(dropout)
-        self.linear2 = nn.Linear(2048, hidden_dim)
-        self.norm2 = nn.LayerNorm(hidden_dim)
-        self.activation = F.relu
+        self.ca_q_proj_2 = nn.Linear(hidden_dim, hidden_dim)
+        self.ca_k_proj_2 = nn.Linear(hidden_dim, hidden_dim)
+        self.ca_v_proj_2 = nn.Linear(hidden_dim, hidden_dim)
+        self.cross_attn_2 = MultiheadAttention(hidden_dim, nhead, dropout=dropout, vdim=hidden_dim)
+        self.ca_q_proj_3 = nn.Linear(hidden_dim, hidden_dim)
+        self.ca_k_proj_3 = nn.Linear(hidden_dim, hidden_dim)
+        self.ca_v_proj_3 = nn.Linear(hidden_dim, hidden_dim)
+        self.cross_attn_3 = MultiheadAttention(hidden_dim, nhead, dropout=dropout, vdim=hidden_dim)
         # init prior_prob setting for focal loss
         prior_prob = 0.01
         bias_value = -math.log((1 - prior_prob) / prior_prob)
@@ -112,18 +112,24 @@ class ConditionalDETR(nn.Module):
             # final_query = self.final_proj(final_query).permute(0,2,1)
             queries_before_ca = hs[lvl].transpose(0,1)
             # print(queries_before_ca.shape)
-            learnable_queries_bs = learnable_queries_bs.transpose(0,1)
-            q = self.ca_q_proj(learnable_queries_bs)
+            final_query = learnable_queries_bs.transpose(0,1)
+            #cross-attention with distributed queries
+            q = self.ca_q_proj(final_query)
             k = self.ca_k_proj(queries_before_ca)
             v = self.ca_v_proj(queries_before_ca)
-            tgt = self.cross_attn(query=q, key=k, value=v)[0]
-            learnable_queries_bs = learnable_queries_bs + self.dropout1(tgt)
-            learnable_queries_bs = self.norm1(learnable_queries_bs)
-            tgt2 = self.linear2(self.dropout2(self.activation(self.linear1(learnable_queries_bs))))
-            learnable_queries_bs = learnable_queries_bs + self.dropout3(tgt2)
-            learnable_queries_bs = self.norm2(learnable_queries_bs).transpose(0,1)
-
-            final_queries.append(learnable_queries_bs)
+            final_query = self.cross_attn(query=q, key=k, value=v)[0]
+            #self-attention among final queries
+            q = self.ca_q_proj_2(final_query)
+            k = self.ca_k_proj_2(final_query)
+            v = self.ca_v_proj_2(final_query)
+            final_query = self.cross_attn_2(query=q, key=k, value=v)[0]
+            #cross-attention with distributed queries
+            q = self.ca_q_proj_3(final_query)
+            k = self.ca_k_proj_3(queries_before_ca)
+            v = self.ca_v_proj_3(queries_before_ca)
+            final_query = self.cross_attn_3(query=q, key=k, value=v)[0]
+            
+            final_queries.append(final_query)
             tmp = self.bbox_embed(learnable_queries_bs)
             tmp[..., :2] += learnbale_reference_before_sigmoid
             outputs_coord = tmp.sigmoid()
