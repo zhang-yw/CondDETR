@@ -129,6 +129,7 @@ class ConditionalDETR(nn.Module):
             v = self.ca_v_proj_3(queries_before_ca)
             final_query = self.cross_attn_3(query=q, key=k, value=v)[0]
             
+            final_query = final_query.transpose(0,1)
             final_queries.append(final_query)
             tmp = self.bbox_embed(learnable_queries_bs)
             tmp[..., :2] += learnbale_reference_before_sigmoid
