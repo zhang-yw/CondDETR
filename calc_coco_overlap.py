@@ -146,7 +146,7 @@ def count(split):
       if ann['iscrowd'] > 0:
         continue
       bbox = ann['bbox']
-      center = ((bbox[0] + bbox[2] / 2) // 8, (bbox[1] + bbox[3] / 2) // 8, ann['category_id'], bbox)
+      center = ((bbox[0] + bbox[2] / 2) // 16, (bbox[1] + bbox[3] / 2) // 16, ann['category_id'], bbox)
       for c in centers:
         if center[0] == c[0] and center[1] == c[1] and center[2] == c[2] and \
            iou(_coco_box_to_bbox(bbox), _coco_box_to_bbox(c[3])) < 2:# 0.5:
