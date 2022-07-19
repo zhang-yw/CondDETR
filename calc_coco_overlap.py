@@ -313,6 +313,6 @@ def count_size(split):
 
 # count_iou('train')
 # count_anchor('train')
-# count('train')
-count_size('train')
+count('train')
+# count_size('train')
 
