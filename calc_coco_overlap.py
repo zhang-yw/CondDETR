@@ -6,8 +6,8 @@ import pycocotools.coco as COCO
 import cv2
 import numpy as np
 from pycocotools import mask as maskUtils
-ANN_PATH = '../../data/coco/annotations/'
-IMG_PATH = '../../data/coco/'
+ANN_PATH = '../coco/annotations/'
+IMG_PATH = '../coco/images/'
 ANN_FILES = {'train': 'instances_train2017.json',
              'val': 'instances_val2017.json'}
 DEBUG = False
